@@ -1,8 +1,10 @@
 module.exports = function(grunt) {
 
   // Project configuration.
-  grunt.initConfig({
+  grunt.initConfig( {
+    
     pkg: grunt.file.readJSON('package.json'),
+    
     jshint: {
       options: {
         jshintrc: '.jshintrc'
@@ -12,6 +14,7 @@ module.exports = function(grunt) {
         'js/jquery.ui.<%= pkg.name %>.js'
       ]
     },
+    
     uglify: {
       options: {
         sourceMap: true,
@@ -22,6 +25,7 @@ module.exports = function(grunt) {
         dest: 'js/<%= pkg.name %>.min.js'
       }
     },
+    
     connect: {
       server: {
         options: {
@@ -29,20 +33,32 @@ module.exports = function(grunt) {
           keepalive: true
         }
       }
+    },
+    
+    watch: {
+      scripts: {
+        files: ['js/<%= pkg.name %>.js'],
+        tasks: ['default'],
+        options: {
+          spawn: true,
+        },
+      },
+    },
+    
+    concurrent: {
+      serve: ['watch', 'connect']
     }
-  });
+    
+  } );
 
-  // Load jshint.
-  grunt.loadNpmTasks( 'grunt-contrib-jshint' );
-
-  // Load uglify.
-  grunt.loadNpmTasks( 'grunt-contrib-uglify' );
+  // Load tasks (use autoloader which examines package.json):
+  require( 'load-grunt-tasks' )( grunt );
   
-  // Load connect.
-  grunt.loadNpmTasks( 'grunt-contrib-connect' );
-  
-  // Default task(s).
-  grunt.registerTask('default', ['jshint', 'uglify']);
+  // Default task(s):
+  grunt.registerTask( 'default', ['jshint', 'uglify'] );
 
+  // Serve task (watch and connect)
+  grunt.registerTask( 'serve', ['concurrent:serve'] );
+  
 };
 
