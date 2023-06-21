@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, initial-scale=1"> 
+
+  <title>AffectButton</title>
+
+  <!-- Use CDN versions of 3rd party resources to avoid clutter in our repository -->
+  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+  <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+  
+  <!-- Include (minimalistic) style for this demo page -->
+  <link rel="stylesheet" href="css/mobile.css" />
+  
+  <!-- Register document ready callback -->
+  <script>
+    jQuery( function( $ ) {
+      
+      $( '[data-role="navbar"]' ).navbar();
+      $( '[data-role="header"], [data-role="footer"]' ).toolbar();
+      
+      $( document ).on( 'pagecontainerchange', function() {
+        var current = $( '.ui-page-active' ).jqmData( 'title' );
+        // Remove active class from nav buttons
+        $( '[data-role="navbar"] a.ui-btn-active' ).removeClass( 'ui-btn-active' );
+        // Add active class to current nav button
+        $( '[data-role="navbar"] a' ).each( function() {
+          if ( $( this ).text() === current ) {
+            $( this ).addClass( 'ui-btn-active' );
+          }
+        } );
+      } );
+      
+    } );
+  </script>
+  
+  
+</head>
+
+
+
+<body>
+  
+  <div data-role="header" data-position="fixed" data-theme="a">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="index.html" data-prefetch="true" data-transition="fade">Demo</a></li>
+        <li><a href="about.html" data-prefetch="true" data-transition="fade">About</a></li>
+        <li><a href="usage.html" data-prefetch="true" data-transition="fade" class="ui-btn-active">Usage</a></li>
+        <li><a href="android.html" data-prefetch="true" data-transition="fade">Android</a></li>
+      </ul>
+    </div><!-- /navbar -->
+  </div><!-- /header -->
+  
+  
+  <div id="about" data-role="page" data-title="About">
+    
+    <div data-role="content">
+      
+      <p>
+        The widget is a re-implementation of Joost Broeken's original Java version. Please refer
+        to his <a href="http://mmi.tudelft.nl/~joostb/#AffectButton">homepage</a> for more
+        information. Basically, you're free to use it in research or education
+        context -- but <i>commercial application will require his explicit blessing</i>.
+      </p>
+      
+      <p>
+        I will now attempt to explain briefly how it all works...
+      </p>
+      
+      <h3>Mapping X and Y co-ordinates to P/A/D components</h3>
+      
+      <p>
+        The attentive reader will have noticed that the canvas is two-dimensional
+        while there are three scalar components. And sure enough, there are lots
+        of P/A/D triplets that you cannot "reach" via input at the canvas.
+      </p>
+      
+      <p>  
+        The important thing to note here is that:
+        <ul>
+        <li>Pleasure corresponds to the horizontal axis of the canvas;</li>
+        <li>Dominance corresponds to the vertical axis of the canvas;</li>
+        <li>Arousal is computed from a function of distance to the center.</li>
+        </ul>
+        I cannot speak to the merits of this restriction, but surveys suggest that
+        users feel the widget is sufficiently expressive.
+      </p>
+      
+      <h3>Mapping P/A/D components to facial expression</h3>
+      
+      <p>
+        The three scalar P/A/D components span a cube, <code>[-1,1]<sup>3</sup></code>
+        for the mathematically inclined. For each of the eight vertices of the cube,
+        as well as the origin at <code>(0,0,0)</code>, Joost has assigned numerical
+        values for eight "features", such as the openness of eyes and mouth, distance
+        between eyebrows and eyes, rotation of eyebrows, curvature of lips.
+        These are the parameters that are used by the <code>paint</code> function to
+        actually draw the face.
+      </p>
+      
+      <p>
+        I like to think of these nine anchor points in P/A/D space as "archetypes".
+        For an arbitrary P/A/D triplet, we determine the (Euclidean) distance to
+        each of the archetypes and then "mix" the associated feature values by
+        computing a weighted sum. The resulting feature vector is then used to
+        repaint the face.
+      </p>
+      
+      <p>
+        The nine archetypes are displayed below:
+      </p>
+      
+      <div id="archetypes">
+      </div>
+      
+      <p>
+        You could re-create each of these archetypes in the Demo section
+        by moving all three sliders to extreme positions at -1 or +1, or to
+        re-create the neutral face at the origin of the P/A/D cube by moving
+        all three sliders to 0.
+      </p>
+    </div>
+
+  </div>
+</body>
+
+</html>

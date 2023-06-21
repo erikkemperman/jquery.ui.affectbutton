@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, initial-scale=1"> 
+
+  <title>AffectButton</title>
+
+  <!-- Use CDN versions of 3rd party resources to avoid clutter in our repository -->
+  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+  <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+  
+  <!-- Include (minimalistic) style for this demo page -->
+  <link rel="stylesheet" href="css/mobile.css" />
+  
+  
+  <!-- Register document ready callback -->
+  <script>
+    jQuery( function( $ ) {
+      
+      $( '[data-role="navbar"]' ).navbar();
+      $( '[data-role="header"], [data-role="footer"]' ).toolbar();
+      
+      $( document ).on( 'pagecontainerchange', function() {
+        var current = $( '.ui-page-active' ).jqmData( 'title' );
+        // Remove active class from nav buttons
+        $( '[data-role="navbar"] a.ui-btn-active' ).removeClass( 'ui-btn-active' );
+        // Add active class to current nav button
+        $( '[data-role="navbar"] a' ).each( function() {
+          if ( $( this ).text() === current ) {
+            $( this ).addClass( 'ui-btn-active' );
+          }
+        } );
+      } );
+      
+    } );
+  </script>
+  
+  
+</head>
+
+
+
+<body>
+  
+  <div data-role="header" data-position="fixed" data-theme="a">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="index.html" data-prefetch="true" data-transition="fade">Demo</a></li>
+        <li><a href="about.html" data-prefetch="true" data-transition="fade">About</a></li>
+        <li><a href="usage.html" data-prefetch="true" data-transition="fade" class="ui-btn-active">Usage</a></li>
+        <li><a href="android.html" data-prefetch="true" data-transition="fade">Android</a></li>
+      </ul>
+    </div><!-- /navbar -->
+  </div><!-- /header -->
+  
+  
+  <div id="usage" data-role="page" data-title="Usage">
+    
+    <div data-role="content">
+      <p>
+        These pages use jQueryMobile, but the widget itself is plain jQuery/UI. Please note,
+        however, that the interaction will vary: if jQueryMobile is detected, the widget
+        expects the user to drag her finger or cursor across the canvas; otherwise,
+        the user is expected to simply point and click.
+        To force one mode or the other, override the <code>drag</code> option (Boolean).
+      </p>
+      
+      <p>
+        The javascript code is available in <a rel="external" href="js/jquery.ui.affectbutton.js">verbose</a> and
+        <a rel="external" href="js/jquery.ui.affectbutton.min.js">minified</a> versions.
+        Alternatively, you're more than welcome to peruse the source
+        <a href="http://github.com/radharing/affectbutton">repository</a>.
+      </p>
+      
+      <p>
+        The basics are explained below. Please refer to the About section before using
+        the widget in your own application!
+      </p>
+      
+      <p>
+        First, you must have a <code>canvas</code> element in your markup somewhere. The
+        following assumes this has an <code>id</code> attribute set to <code>"affectbutton"</code>;
+        if you use a different identifier or want to target the element by other attributes
+        that is fine, of course, so long as you change the jQuery selectors accordingly:
+<pre><code>
+&lt;body&gt;
+  
+  ...
+  
+  &lt;canvas id="affectbutton"&gt;&lt;/canvas&gt;
+  
+  ...
+  
+&lt;/body&gt;
+</code></pre>
+      </p>
+      
+      <p>
+        Second, you must include in your <code>document ready</code> callback something
+        like this to initialize the widget and attach a change listener:
+<pre><code>
+&lt;script&gt;
+  jQuery( function( $ ) {
+    
+    ...
+    
+    var canvas = $( '#affectbutton' );
+    
+    canvas.affectbutton( {
+      // overriding options go here
+    } );
+    
+    canvas.on( 'affectchanged', function( event, affect ) {
+      // The affect argument in here is an object having
+      // properties 'pleasure', 'arousal', and 'dominance'.
+    } );
+    
+    ...
+    
+  } );
+&lt;/script&gt;
+</code></pre>
+      </p>
+      
+      <p>
+        When you need to get or set the affect value externally, you can use
+        the widget's <code>affect</code> function. If you call this with no
+        additional arguments it will return the current value as a plain object
+        (as in the change listener above):
+<pre><code>
+var affect = canvas.affectbutton( 'affect' );
+</code></pre>
+        If you call it with a single extra  argument which is an appropriate object
+        it will update the face to express that value:
+<pre><code>
+canvas.affectbutton( 'affect', {
+  pleasure: 0.5,
+  arousal: 1,
+  dominance: 0
+} );
+</code></pre>
+        If you call it with two extra arguments, the first a string and the second
+        a number it will update the specified individual component:
+<pre><code>
+canvas.affectbutton( 'affect', 'pleasure', 1 );
+</code></pre>
+      </p>
+      
+    </div>
+
+  </div>
+</body>
+
+</html>

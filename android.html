@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, initial-scale=1"> 
+
+  <title>AffectButton</title>
+
+  <!-- Use CDN versions of 3rd party resources to avoid clutter in our repository -->
+  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+  <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+  
+  <!-- Include (minimalistic) style for this demo page -->
+  <link rel="stylesheet" href="css/mobile.css" />
+  
+  
+  <!-- Register document ready callback -->
+  <script>
+    jQuery( function( $ ) {
+      
+      $( '[data-role="navbar"]' ).navbar();
+      $( '[data-role="header"], [data-role="footer"]' ).toolbar();
+      
+      $( document ).on( 'pagecontainerchange', function() {
+        var current = $( '.ui-page-active' ).jqmData( 'title' );
+        // Remove active class from nav buttons
+        $( '[data-role="navbar"] a.ui-btn-active' ).removeClass( 'ui-btn-active' );
+        // Add active class to current nav button
+        $( '[data-role="navbar"] a' ).each( function() {
+          if ( $( this ).text() === current ) {
+            $( this ).addClass( 'ui-btn-active' );
+          }
+        } );
+      } );
+      
+    } );
+  </script>
+  
+  
+</head>
+
+
+
+<body>
+  
+  <div data-role="header" data-position="fixed" data-theme="a">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="index.html" data-prefetch="true" data-transition="fade">Demo</a></li>
+        <li><a href="about.html" data-prefetch="true" data-transition="fade">About</a></li>
+        <li><a href="usage.html" data-prefetch="true" data-transition="fade" class="ui-btn-active">Usage</a></li>
+        <li><a href="android.html" data-prefetch="true" data-transition="fade">Android</a></li>
+      </ul>
+    </div><!-- /navbar -->
+  </div><!-- /header -->
+  
+  
+  <div id="android" data-role="page" data-title="Android">
+    
+    <div data-role="content">
+      
+      <p>
+        I have also implemented the AffectButton for use in (native) Android apps.
+        Of course you could just use the javascript version and display it within
+        a <code>WebView</code> but the native version performs much better as it
+        is implemented using OpenGL for Embedded Systems.
+      </p>
+      
+      <p>
+        A binary containing a demo similar to this one can be downloaded
+        <a href="AndroidAffectButton.apk" rel="external">here</a>. You can
+        install it on your Android device directly provided you have configured
+        it to allow packages from other locations than Google Play. Otherwise
+        you will need the Android Development Kit and use its <code>adb</code>
+        command to install it on your device via a USB cable.
+      </p>
+      
+      <p>
+        The code for the Android version is not yet available... I wrote it while
+        employed at <a href="http://ask-cs.com/">ASK Community Systems</a> and
+        will need to clear it with them first.
+        When I get a green light to share the code, I will most likely put it in
+        a separate repository and link to it here, so do check for updates. 
+      </p>
+      
+      
+      
+    </div>
+
+  </div>
+</body>
+
+</html>

@@ -14,7 +14,7 @@ var NUM_FEATURES = 8,
     1.3,       1,  -1,   1,     -0.5,    0,    0,    0,    0, -0.5,    1,    1,
     1.3,       1,   1,  -1,      0.3,    1,    0,    0, -1.5,  0.7,  0.5, -0.5,
     1.3,       1,   1,   1,      0.5,  0.5,    0,    0,    1,  0.5,    1,  0.5
-  ]
+  ],
 
   // ---- style defaults match the Java implementation: ----
   STYLE_DEFAULTS = {
@@ -77,6 +77,7 @@ var NUM_FEATURES = 8,
       grid:           [.1, .25, .5, .75, .9]
     }
   };
+
 
 $.widget( 'ui.affectbutton', { // begin widget
   

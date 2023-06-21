@@ -6,6 +6,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, initial-scale=1"> 
 
+  <title>AffectButton</title>
 
   <!-- Use CDN versions of 3rd party resources to avoid clutter in our repository -->
   <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
@@ -26,9 +27,29 @@
   <script>
     jQuery( function( $ ) {
       
-      // Fetch style from its JSON file, wrap everything else in the callback
+      if ( window.location.href.indexOf( 'index.html' ) === -1 ) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      $( '[data-role="navbar"]' ).navbar();
+      $( '[data-role="header"], [data-role="footer"]' ).toolbar();
+      
+      $( document ).on( 'pagecontainerchange', function() {
+        console.log('pagecontainerchange', event);
+        var current = $( '.ui-page-active' ).jqmData( 'title' );
+        // Remove active class from nav buttons
+        $( '[data-role="navbar"] a.ui-btn-active' ).removeClass( 'ui-btn-active' );
+        // Add active class to current nav button
+        $( '[data-role="navbar"] a' ).each( function() {
+          if ( $( this ).text() === current ) {
+            $( this ).addClass( 'ui-btn-active' );
+          }
+        } );
+      } );
+      
       $.getJSON( 'style.json', function( style ) {
-        
+           
         var $element = $( '#affectbutton' );
         
         // Instantiate the affectbutton widget
@@ -65,8 +86,11 @@
         } );
         
       } );
-      
     } );
+    
+  
+    
+    
   </script>
   
   
@@ -75,9 +99,21 @@
 
 
 <body>
-
-  <div id="page" data-role="page">
-
+  
+  <div data-role="header" data-position="fixed" data-theme="a">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="index.html" data-prefetch="true" data-transition="fade" class="ui-btn-active">Demo</a></li>
+        <li><a href="about.html" data-prefetch="true" data-transition="fade">About</a></li>
+        <li><a href="usage.html" data-prefetch="true" data-transition="fade">Usage</a></li>
+        <li><a href="android.html" data-prefetch="true" data-transition="fade">Android</a></li>
+      </ul>
+    </div><!-- /navbar -->
+  </div><!-- /header -->
+  
+  
+  <div id="demo" data-role="page" data-title="Demo">
+    
     <div data-role="content">
     
       <p>
@@ -86,8 +122,6 @@
         Pleasure-Arousal-Dominance
         <a href="http://en.wikipedia.org/wiki/PAD_emotional_state_model">model</a>. 
       <p>
-      
-      <h2>Demo</h2>
       
       <p>
         Provided you are using a sufficiently modern browser, you will see a yellow face
@@ -116,66 +150,19 @@
       </fieldset>
       
       <p>
-        Conversely, you can also enter P/A/D components at the sliders to make the
+        Conversely, you can also set P/A/D components at the sliders to make the
         facial expression change accordingly -- all values range over [-1, 1].
       </p>
       
-      <p>
-        The attentive reader will have noticed that the canvas is two-dimensional
-        while there are three scalar components. And sure enough, there are lots
-        of P/A/D triplets that you cannot "reach" via input at the canvas.
-      </p>
-      
-      <p>  
-        The important thing to note here is that:
-        <ul>
-        <li>Pleasure corresponds to the horizontal axis of the canvas;</li>
-        <li>Dominance corresponds to the vertical axis of the canvas;</li>
-        <li>Arousal is computed from a function of distance to the center.</li>
-        </ul>
-        I cannot speak to the merits of this restriction, but surveys suggest that
-        users feel the widget is sufficiently expressive.
-      </p>
-      
-      <h2>Usage</h2>
+      <h3>Requirements</h3>
       
       <p>
-        This page uses jQueryMobile, but the widget itself is plain jQuery/UI. Please note,
-        however, that the interaction will vary: if jQueryMobile is detected, the widget
-        expects the user to drag her finger or cursor across the canvas; otherwise,
-        the user is expected to simply point and click.
-        To force one mode or the other, override the <code>drag</code> option (Boolean).
-      </p>
-      
-      <p>
-        You can inspect the current page's source to see how the widget is initialized, how
-        to attach change listeners to it, and how to set P/A/D components explicitly. The
-        javascript code is available in <a rel="external" href="js/jquery.ui.affectbutton.js">verbose</a> and
-        <a rel="external" href="js/jquery.ui.affectbutton.min.js">minified</a> versions.
-      </p>
-      
-      <p>
-        Alternatively, you're more than welcome to peruse the source
-        <a href="http://github.com/radharing/affectbutton">repository</a>, of course.
-      </p>
-      
-      <h2>Requirements</h2>
-      
-      <p>
-        Obviously, we require that the browser supports JavaScript and has it enabled for
+        Obviously, we require that the browser supports javascript and has it enabled for
         the domain at hand. Furthermore, the widget is rendered in a <code>canvas</code>
         element. You should not have any compatibility issues unless you use really outdated
         versions of jQuery/UI.
       </p>
       
-      <h2>About</h2>
-      
-      <p>
-        The widget is a re-implementation of Joost Broeken's original Java version. Please refer
-        to his <a href="http://mmi.tudelft.nl/~joostb/#AffectButton">homepage</a> for more
-        information about usage... Basically, you're free to use it in research or education
-        context -- but commercial application will require his explicit blessing.
-      </p>
       
     </div>
 
