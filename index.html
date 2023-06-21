@@ -102,12 +102,14 @@
         the face expresses your mood and examine the P/A/D components in the number boxes
         underneath.
       </p>
+      
       <div class="affectcontainer">
+        
         <canvas id="affectbutton" width="300px" height="300px"></canvas>
         
         <fieldset data-role="fieldcontain">
 	        <label for="pleasure">P</label>
-	        <input id="pleasure" type="number" value="0" min="-1" max="1" step="0.05" size="4" />
+	        <input id="pleasure" type="number" value="0" min="-1" max="1" step="0.05" />
 	        
 	        <label for="arousal">A</label>
 	        <input id="arousal" type="number" value="0" min="-1" max="1" step="0.05" />
@@ -122,19 +124,21 @@
         Conversely, you can also enter P/A/D components into the number boxes to make the
         facial expression change accordingly -- all values range over [-1, 1].
       </p>
+      
       <p>
         The attentive reader will have noticed that the canvas is 2-dimensional while there are
         3 number boxes. And sure enough, there are lots of P/A/D triplets that you cannot "reach"
         via input at the canvas.
       </p>
+      
       <p>  
         The important thing to note here is that:<br />
         - Pleasure corresponds to the horizontal axis of the canvas;<br />
         - Dominance corresponds to the vertical axis;<br />
         - Arousal is computed as a function of distance
          to the center of the canvas.</br>
-        I cannot speak to the merits of this restriction, but surveys suggest that users don't
-        actually feel badly shortchanged by it.
+        I cannot speak to the merits of this restriction, but surveys suggest that users still
+        feel the widget is sufficiently expressive.
       </p>
       
       <h2>Usage</h2>
@@ -153,12 +157,14 @@
         javascript code is available in <a rel="external" href="js/jquery.ui.affectbutton.js">verbose</a> and
         <a rel="external" href="js/jquery.ui.affectbutton.min.js">minified</a> versions.
       </p>
+      
       <p>
         Alternatively, you're more than welcome to peruse the source
         <a href="http://github.com/radharing/affectbutton">repository</a>, of course.
       </p>
       
       <h2>Requirements</h2>
+      
       <p>
         Obviously, we require that the browser supports JavaScript and has it enabled for
         the domain at hand. Furthermore, the widget is rendered in a <code>canvas</code>
@@ -167,13 +173,13 @@
       </p>
       
       <h2>About</h2>
+      
       <p>
         The widget is a re-implementation of Joost Broeken's original Java version. Please refer
         to his <a href="http://mmi.tudelft.nl/~joostb/#AffectButton">homepage</a> for more
         information about usage... Basically, you're free to use it in research or education
         context -- but commercial application will require his explicit blessing.
       </p>
-      
       
     </div>
 
