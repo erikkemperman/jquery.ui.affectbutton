@@ -239,6 +239,7 @@ $.widget( 'ui.affectbutton', { // begin widget
     var thiz = this;
     return {
       'selectstart': false,
+      'touchmove': false,
       'mouseenter': function() {
         thiz.down = false;
         return false;
