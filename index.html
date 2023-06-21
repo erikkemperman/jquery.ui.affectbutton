@@ -26,41 +26,46 @@
   <script>
     jQuery( function( $ ) {
       
-      var $element = $( '#affectbutton' );
-      
-      // Instantiate the affectbutton widget
-      $element.affectbutton( {
-        // overriding options go here
-        style: 'style.json',
-        drag: true
-      } )
-      
-      // Listen for changes at the widget ...
-      .on( 'affectchanged',
-          function( event, affect ) {
-            // ... so we can update the slider of each component.
-            $.each( affect, function( component, value ) {
-              $( '#' + component ).val( value ).slider( 'refresh' );
+      // Fetch style from its JSON file, wrap everything else in the callback
+      $.getJSON( 'style.json', function( style ) {
+        
+        var $element = $( '#affectbutton' );
+        
+        // Instantiate the affectbutton widget
+        $element.affectbutton( {
+          // overriding options go here
+          style: style,
+          drag: true
+        } )
+        
+        // Listen for changes at the widget ...
+        .on( 'affectchanged',
+            function( event, affect ) {
+              // ... so we can update the slider of each component.
+              $.each( affect, function( component, value ) {
+                $( '#' + component ).val( value ).slider( 'refresh' );
+              } );
             } );
+        
+        // For each of our three sliders ...
+        $( '#pleasure, #arousal, #dominance' ).each( function() {
+          var $this = $( this );
+          
+          // set the initial values from the widget
+          $this.slider( 'refresh' );
+          
+          // and listen for changes and update the widget accordingly ...
+          $this.on( 'change', function( event ) {
+            var value = parseFloat( $this.val() );
+            if ( ! isNaN( value ) ) {
+              // ... so we can update the widget accordingly.
+              $element.affectbutton( 'affect', this.id, value );
+            }
           } );
-  
-      // For each of our three sliders ...
-      $( '#pleasure, #arousal, #dominance' ).each( function() {
-        var $this = $( this ),
-        affect = $element.affectbutton( 'affect' );
-        
-        // set the initial values from the widget
-        $this.val( affect[ this.id ] ).slider( 'refresh' );
-        
-        // and listen for changes and update the widget accordingly ...
-        $this.on( 'change', function( event ) {
-          var value = Number.parseFloat( $this.val() );
-          if ( ! Number.isNaN( value ) ) {
-            // ... so we can update the widget accordingly.
-            $element.affectbutton( 'affect', this.id, value );
-          }
         } );
+        
       } );
+      
     } );
   </script>
   
@@ -91,21 +96,23 @@
         underneath.
       </p>
       
-      <div class="affectcontainer">
-        
-        <canvas id="affectbutton"></canvas>
-        
-      </div>
+      <!--  The main attraction -->
+      <canvas id="affectbutton"></canvas>
       
-      <fieldset data-role="fieldcontain" data-theme="a">
-        <label for="pleasure">Pleasure</label>
-        <input id="pleasure" type="range" value="0" min="-1" max="1" step="0.05" />
-        
-        <label for="arousal">Arousal</label>
-        <input id="arousal" type="range" value="0" min="-1" max="1" step="0.05" />
-        
-        <label for="dominance">Dominance</label>
-        <input id="dominance" type="range" value="0" min="-1" max="1" step="0.05" />
+      <!-- P/A/D sliders -->
+      <fieldset data-role="controlgroup">
+	      <div class="ui-field-contain">
+	        <label for="pleasure">Pleasure</label>
+	        <input id="pleasure" type="range" value="0" min="-1" max="1" step="0.05" />
+	      </div>
+	      <div class="ui-field-contain">
+	        <label for="arousal">Arousal</label>
+	        <input id="arousal" type="range" value="0" min="-1" max="1" step="0.05" />
+	      </div>
+	      <div class="ui-field-contain">
+	        <label for="dominance">Dominance</label>
+	        <input id="dominance" type="range" value="0" min="-1" max="1" step="0.05" />
+	      </div>
       </fieldset>
       
       <p>

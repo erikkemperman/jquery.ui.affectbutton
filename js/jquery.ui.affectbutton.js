@@ -112,46 +112,40 @@ $.widget( 'ui.affectbutton', { // begin widget
   
   _create: function() {
     // TODO assert that this.element is a CANVAS and that options have sane values
-    
-    var k = this.options.offset * (4 + NUM_FEATURES),
-    element = this.element,
-    thiz = this;
+    var thiz = this,
+    k = thiz.options.offset * (4 + NUM_FEATURES),
+    element = thiz.element;
     
     // Set up instance state
     $.extend( thiz, {
       state: {
-        pleasure:  ARCHETYPES[k + 1],
-        arousal:   ARCHETYPES[k + 2],
-        dominance: ARCHETYPES[k + 3]
+        pleasure:   ARCHETYPES[k + 1],
+        arousal:    ARCHETYPES[k + 2],
+        dominance:  ARCHETYPES[k + 3]
       },
-      features:   ARCHETYPES.slice( k + 4, k + 4 + NUM_FEATURES ),
-      width:   0,
-      height:  0,
-      active:  thiz.options.active,
-      repaint: true,
-      down:    false,
-      context: element.get( 0 ).getContext( '2d' )
+      features:  ARCHETYPES.slice( k + 4, k + 4 + NUM_FEATURES ),
+      width:     0,
+      height:    0,
+      active:    thiz.options.active,
+      repaint:   true,
+      down:      false,
+      touch:     false,
+      context:   element.get( 0 ).getContext( '2d' )
     } );
+    
+    // if canvas doesn't have width or height attributes, take these from
+    // CSS. If you specify both you effectively have different render and
+    // display resolution, with asorted scaling artefacts:
+    // http://stackoverflow.com/questions/4938346/canvas-width-and-height-in-html5
+    this.element.attr( {
+      width: this.element.attr( 'width' ) || element.width(),
+      height: this.element.attr( 'height' ) || element.height()
+    } );
+    
     
     // Apply some of our options here
     this.context.imageSmoothingEnabled = thiz.options.smoothing;
     element.css( 'cursor', thiz.options.cursor );
-    
-    // If style was overridden and is now a single string, assume it is a
-    // JSON file and go fetch:
-    if ( typeof this.options.style === 'string' ) {
-      var visible = element.is( ':visible' );
-      if ( visible ) {
-        element.hide();
-      }
-      $.getJSON( thiz.options.style, function( data ) {
-        $.extend( thiz.options.style, data );
-        if ( visible ) {
-          element.show();
-        }
-      } );
-      thiz.options.style = STYLE_DEFAULTS;
-    }
     
     // Bind event listeners
     $.each( this._eventMap(), function( key, callback ) {
@@ -261,6 +255,17 @@ $.widget( 'ui.affectbutton', { // begin widget
         thiz.down = false;
         thiz._doMouse( event );
         return false;
+      },
+      'touchstart': function( event ) {
+        thiz.touch = true;
+      },
+      'touchmove': function() {
+        if ( thiz.touch ) {
+          event.preventDefault();
+        }
+      },
+      'touchend': function() {
+        thiz.touch = false;
       }
     };
   },
@@ -335,8 +340,8 @@ $.widget( 'ui.affectbutton', { // begin widget
   _paint: function() {
     var context = this.context, 
       time = Date.now(),
-      width = this.element.width(),
-      height = this.element.height(),
+      width = this.element.innerWidth(),
+      height = this.element.innerHeight(),
       min = Math.min( width, height ),
       padding = Math.max( 1, this._scale( min, this.options.padding ) ),
       size = Math.max( min - 2*padding, 0 ),
@@ -360,16 +365,6 @@ $.widget( 'ui.affectbutton', { // begin widget
     // repaint background if necessary
     if ( width !== this.width || height !== this.height ) {
       $.extend( this, { size: size, width: width, height: height } );
-      
-      // if canvas doesn't have width or height attributes, take these from
-      // CSS. If you specify both you effectively have different render and
-      // display resolution, with asorted scaling artefacts:
-      // http://stackoverflow.com/questions/4938346/canvas-width-and-height-in-html5
-      this.element.attr( {
-        width: this.element.attr( 'width' ) || width,
-        height: this.element.attr( 'height' ) || height
-      } );
-      
       // background
       this._style( context, size, 'ground', 0, 0, 0, height );
       context.fillRect( 0, 0, width, height );
