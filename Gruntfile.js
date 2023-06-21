@@ -11,7 +11,7 @@ module.exports = function(grunt) {
       },
       all: [
         'Gruntfile.js',
-        'js/jquery.ui.<%= pkg.name %>.js'
+        'js/<%= pkg.name %>.js'
       ]
     },
     
