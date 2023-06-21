@@ -21,7 +21,7 @@
   <script>
     jQuery( function( $ ) {
       
-      var element = $( 'canvas.affectbutton' );
+      var element = $( '#affectbutton' );
       
       // Instantiate the affectbutton widget
       element.affectbutton( {
@@ -64,16 +64,17 @@
   
   <!-- Let's not let extensive styling get in the way of what we actually want to demonstrate -->
   <style>
-  .affectbutton {
-    padding: 0;
+  div[data-role="content"] {
+    max-width: 600px;
     border: 0;
-    margin: 0.5em auto;
-    width: 400px;
-  }
-  .paragraph {
-    padding: 0.5em;
+    padding: 10;
     margin: 0 auto;
-    max-width: 640px;  
+  }
+  .affectcontainer {
+    border: 0;
+    padding: 0;
+    margin: 0 auto;
+    width: 300px;
   }
   </style>
   
@@ -87,47 +88,46 @@
 
     <div data-role="content">
     
-      <p class="paragraph">
+      <p>
         The <b>AffectButton</b> is a widget to record and/or display emotional state,
         in terms of three scalar values according to the so-called Pleasure-Arousal-Dominance
         <a href="http://en.wikipedia.org/wiki/PAD_emotional_state_model">model</a>. 
       <p>
       
-      <h2 class="paragraph">Demo</h2>
+      <h2>Demo</h2>
       
-      <p class="paragraph">
+      <p>
         Provided you are using a sufficiently modern browser, you will see a yellow face
         drawn below this paragraph. Drag your finger or your cursor across the canvas until
         the face expresses your mood and examine the P/A/D components in the number boxes
         underneath.
       </p>
-      <div class="affectbutton">
-        <canvas class="affectbutton" width="400px" height="400px"></canvas>
+      <div class="affectcontainer">
+        <canvas id="affectbutton" width="300px" height="300px"></canvas>
+        
+        <fieldset data-role="fieldcontain">
+	        <label for="pleasure">P</label>
+	        <input id="pleasure" type="number" value="0" min="-1" max="1" step="0.05" size="4" />
+	        
+	        <label for="arousal">A</label>
+	        <input id="arousal" type="number" value="0" min="-1" max="1" step="0.05" />
+	        
+	        <label for="dominance">D</label>
+	        <input id="dominance" type="number" value="0" min="-1" max="1" step="0.05" />
+        </fieldset>
+        
       </div>
       
-      <div class="affectbutton" data-role="fieldcontain">
-      
-        <label for="pleasure">Pleasure</label>
-        <input id="pleasure" type="number" value="0" min="-1" max="1" step="0.05" size="4" />
-        
-        <label for="arousal">Arousal</label>
-        <input id="arousal" type="number" value="0" min="-1" max="1" step="0.05" />
-        
-        <label for="dominance">Dominance</label>
-        <input id="dominance" type="number" value="0" min="-1" max="1" step="0.05" />
-        
-      </div>
-      
-      <p class="paragraph">
+      <p>
         Conversely, you can also enter P/A/D components into the number boxes to make the
         facial expression change accordingly -- all values range over [-1, 1].
       </p>
-      <p class="paragraph">
+      <p>
         The attentive reader will have noticed that the canvas is 2-dimensional while there are
         3 number boxes. And sure enough, there are lots of P/A/D triplets that you cannot "reach"
         via input at the canvas.
       </p>
-      <p class="paragraph">  
+      <p>  
         The important thing to note here is that:<br />
         - Pleasure corresponds to the horizontal axis of the canvas;<br />
         - Dominance corresponds to the vertical axis;<br />
@@ -137,9 +137,9 @@
         actually feel badly shortchanged by it.
       </p>
       
-      <h2 class="paragraph">Usage</h2>
+      <h2>Usage</h2>
       
-      <p class="paragraph">
+      <p>
         This page uses jQueryMobile, but the widget itself is plain jQuery/UI. Please note,
         however, that the interaction will vary: if jQueryMobile is detected, the widget
         expects the user to drag her finger or cursor across the canvas; otherwise,
@@ -147,27 +147,27 @@
         To force one mode or the other, override the <code>drag</code> option (Boolean).
       </p>
       
-      <p class="paragraph">
+      <p>
         You can inspect the current page's source to see how the widget is initialized, how
         to attach change listeners to it, and how to set P/A/D components explicitly. The
         javascript code is available in <a rel="external" href="js/jquery.ui.affectbutton.js">verbose</a> and
         <a rel="external" href="js/jquery.ui.affectbutton.min.js">minified</a> versions.
       </p>
-      <p class="paragraph">
+      <p>
         Alternatively, you're more than welcome to peruse the source
         <a href="http://github.com/radharing/affectbutton">repository</a>, of course.
       </p>
       
-      <h2 class="paragraph">Requirements</h2>
-      <p class="paragraph">
+      <h2>Requirements</h2>
+      <p>
         Obviously, we require that the browser supports JavaScript and has it enabled for
         the domain at hand. Furthermore, the widget is rendered in a <code>canvas</code>
         element. You should not have any compatibility issues unless you use really outdated
         versions of jQuery/UI.
       </p>
       
-      <h2 class="paragraph">About</h2>
-      <p class="paragraph">
+      <h2>About</h2>
+      <p>
         The widget is a re-implementation of Joost Broeken's original Java version. Please refer
         to his <a href="http://mmi.tudelft.nl/~joostb/#AffectButton">homepage</a> for more
         information about usage... Basically, you're free to use it in research or education
