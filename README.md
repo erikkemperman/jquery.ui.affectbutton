@@ -14,13 +14,13 @@ Change into the new directory:
 
     cd jquery.ui.affectbutton
 
-Install grub, grub-contrib-jshint, grub-contrib-uglify:
+Install grunt, grunt-contrib-jshint, grunt-contrib-uglify:
 
-    npm install grub
-    npm install grub-contrib-jshint
-    npm install grub-contrib-uglify
+    npm install grunt
+    npm install grunt-contrib-jshint
+    npm install grunt-contrib-uglify
 
-And start grub to run the jshint (static code analysis) and uglify (minification) tasks:
+And start grunt to run the jshint (static code analysis) and uglify (minification) tasks:
 
-    grub
+    grunt
 
