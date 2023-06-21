@@ -1,6 +1,6 @@
 Usage
 =====
-Please refer to http://radharing.github.io/jquery.ui.affectbutton for a demo,
+Please refer to http://erikkemperman.github.io/jquery.ui.affectbutton for a demo,
 details about how to use the widget, and an explanation of how it works. 
 
 Build
@@ -11,7 +11,7 @@ proceed as follows.
 
 Clone the repository:
 
-    git clone https://github.com/radharing/jquery.ui.affectbutton.git
+    git clone https://github.com/erikkemperman/jquery.ui.affectbutton.git
 
 Change into the new directory:
 
