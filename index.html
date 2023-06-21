@@ -12,71 +12,58 @@
   <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
   <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
   
+  <!-- Include (minimalistic) style for this demo page -->
+  <link rel="stylesheet" href="css/mobile.css" />
   
   <!-- Include the affectbutton widget -->
   <script src="js/jquery.ui.affectbutton.min.js"></script>
+  <!-- <script src="js/jquery.ui.affectbutton.js"></script> -->
+  
+  
   
   
   <!-- Register document ready callback -->
   <script>
     jQuery( function( $ ) {
       
-      var element = $( '#affectbutton' );
+      var $element = $( '#affectbutton' );
       
       // Instantiate the affectbutton widget
-      element.affectbutton( {
-        // overriding options would go here  
+      $element.affectbutton( {
+        // overriding options go here
+        style: 'style.json',
+        drag: true
       } )
       
       // Listen for changes at the widget ...
       .on( 'affectchanged',
           function( event, affect ) {
-            // ... so we can update the number box of each component.
+            // ... so we can update the slider of each component.
             $.each( affect, function( component, value ) {
-              $( '#' + component ).val( value );
+              $( '#' + component ).val( value ).slider( 'refresh' );
             } );
           } );
   
-      // Conversely, listen for changes at the number boxes ...
+      // For each of our three sliders ...
       $( '#pleasure, #arousal, #dominance' ).each( function() {
-        var $this = $( this );
-        $this.on( 'input', function() {
+        var $this = $( this ),
+        affect = $element.affectbutton( 'affect' );
+        
+        // set the initial values from the widget
+        $this.val( affect[ this.id ] ).slider( 'refresh' );
+        
+        // and listen for changes and update the widget accordingly ...
+        $this.on( 'change', function( event ) {
           var value = Number.parseFloat( $this.val() );
           if ( ! Number.isNaN( value ) ) {
             // ... so we can update the widget accordingly.
-            element.affectbutton( 'affect', this.id, value );
-          }
-        } )
-        
-        // Component values are clipped to [-1, 1] automatically before they're applied
-        // to the widget, but we'll want to reflect that in the number boxes as well:
-        .on( 'change', function() {
-          var value = $this.val();
-          if ( value < -1 ) {
-            $this.val( -1 );
-          } else if ( value > 1 ) {
-            $this.val( 1 );
+            $element.affectbutton( 'affect', this.id, value );
           }
         } );
       } );
     } );
   </script>
   
-  <!-- Let's not let extensive styling get in the way of what we actually want to demonstrate -->
-  <style>
-  div[data-role="content"] {
-    max-width: 600px;
-    border: 0;
-    padding: 10;
-    margin: 0 auto;
-  }
-  .affectcontainer {
-    border: 0;
-    padding: 0;
-    margin: 0 auto;
-    width: 300px;
-  }
-  </style>
   
 </head>
 
@@ -89,8 +76,9 @@
     <div data-role="content">
     
       <p>
-        The <b>AffectButton</b> is a widget to record and/or display emotional state,
-        in terms of three scalar values according to the so-called Pleasure-Arousal-Dominance
+        The <b>AffectButton</b> is a widget to record and/or display emotional
+        state, in terms of three scalar values according to the so-called
+        Pleasure-Arousal-Dominance
         <a href="http://en.wikipedia.org/wiki/PAD_emotional_state_model">model</a>. 
       <p>
       
@@ -99,46 +87,47 @@
       <p>
         Provided you are using a sufficiently modern browser, you will see a yellow face
         drawn below this paragraph. Drag your finger or your cursor across the canvas until
-        the face expresses your mood and examine the P/A/D components in the number boxes
+        the face expresses your mood and examine the P/A/D components at the sliders
         underneath.
       </p>
       
       <div class="affectcontainer">
         
-        <canvas id="affectbutton" width="300px" height="300px"></canvas>
-        
-        <fieldset data-role="fieldcontain">
-	        <label for="pleasure">P</label>
-	        <input id="pleasure" type="number" value="0" min="-1" max="1" step="0.05" />
-	        
-	        <label for="arousal">A</label>
-	        <input id="arousal" type="number" value="0" min="-1" max="1" step="0.05" />
-	        
-	        <label for="dominance">D</label>
-	        <input id="dominance" type="number" value="0" min="-1" max="1" step="0.05" />
-        </fieldset>
+        <canvas id="affectbutton"></canvas>
         
       </div>
       
+      <fieldset data-role="fieldcontain" data-theme="a">
+        <label for="pleasure">Pleasure</label>
+        <input id="pleasure" type="range" value="0" min="-1" max="1" step="0.05" />
+        
+        <label for="arousal">Arousal</label>
+        <input id="arousal" type="range" value="0" min="-1" max="1" step="0.05" />
+        
+        <label for="dominance">Dominance</label>
+        <input id="dominance" type="range" value="0" min="-1" max="1" step="0.05" />
+      </fieldset>
+      
       <p>
-        Conversely, you can also enter P/A/D components into the number boxes to make the
+        Conversely, you can also enter P/A/D components at the sliders to make the
         facial expression change accordingly -- all values range over [-1, 1].
       </p>
       
       <p>
-        The attentive reader will have noticed that the canvas is 2-dimensional while there are
-        3 number boxes. And sure enough, there are lots of P/A/D triplets that you cannot "reach"
-        via input at the canvas.
+        The attentive reader will have noticed that the canvas is two-dimensional
+        while there are three scalar components. And sure enough, there are lots
+        of P/A/D triplets that you cannot "reach" via input at the canvas.
       </p>
       
       <p>  
-        The important thing to note here is that:<br />
-        - Pleasure corresponds to the horizontal axis of the canvas;<br />
-        - Dominance corresponds to the vertical axis;<br />
-        - Arousal is computed as a function of distance
-         to the center of the canvas.</br>
-        I cannot speak to the merits of this restriction, but surveys suggest that users still
-        feel the widget is sufficiently expressive.
+        The important thing to note here is that:
+        <ul>
+        <li>Pleasure corresponds to the horizontal axis of the canvas;</li>
+        <li>Dominance corresponds to the vertical axis of the canvas;</li>
+        <li>Arousal is computed from a function of distance to the center.</li>
+        </ul>
+        I cannot speak to the merits of this restriction, but surveys suggest that
+        users feel the widget is sufficiently expressive.
       </p>
       
       <h2>Usage</h2>

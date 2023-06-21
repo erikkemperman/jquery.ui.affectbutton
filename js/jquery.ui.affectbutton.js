@@ -14,31 +14,10 @@ var NUM_FEATURES = 8,
     1.3,       1,  -1,   1,     -0.5,    0,    0,    0,    0, -0.5,    1,    1,
     1.3,       1,   1,  -1,      0.3,    1,    0,    0, -1.5,  0.7,  0.5, -0.5,
     1.3,       1,   1,   1,      0.5,  0.5,    0,    0,    1,  0.5,    1,  0.5
-  ];
+  ]
 
-$.widget( 'ui.affectbutton', { // begin widget
-  
-  // ---- Declare user-configurable options with their default values: ----
-  options: {
-    
-    // behavior
-    active:           true,
-    drag:             typeof $.mobile !== 'undefined',
-    offset:           0, // index of initial affect (archetype 0,...,8)
-    interval:         40, // (maximum) 25 frames per second
-    sensitivity:      1.1,
-    sigmoidSteepness: 11,
-    sigmoidZero:      8.5,
-    swapAD:           false,
-    
-    // appearance
-    cursor:           'crosshair',
-    lineCap:          'round',
-    scaleMin:         10,
-    scaleMax:         370, // max-min=360 is highly composite
-    padding:          2,
-    
-    /* ---- These are the colors preferred by Joost Broekens: ----
+  // ---- style defaults match the Java implementation: ----
+  STYLE_DEFAULTS = {
     ground: {
       fill0:          '#edfeff',
       fill1:          '#cbdcff',
@@ -97,65 +76,35 @@ $.widget( 'ui.affectbutton', { // begin widget
       width:          1,
       grid:           [.1, .25, .5, .75, .9]
     }
-    */
+  };
+
+$.widget( 'ui.affectbutton', { // begin widget
+  
+  // ---- Declare user-configurable options with their default values: ----
+  options: {
     
-    /* ---- These are colors I personally like better: ---- */
-    ground: {
-      fill0:         '#534',
-      fill1:         '#756',
-      stroke:        '#645',
-      width:         1
-    },
+    // behavior
+    active:           true,
+    drag:             typeof $.mobile !== 'undefined',
+    offset:           0, // index of initial affect (archetype 0,...,8)
+    interval:         40, // (maximum) 25 frames per second
     
-    face: {
-      fill0:         '#fdb',
-      fill1:         '#eb0',
-      stroke:        '#fc3',
-      width:         1,
-      shadow:        '#312',
-      shadowX:       2,
-      shadowY:       3
-    },
+    // TODO should these mapping parameters be constants? 
+    sensitivity:      1.1,
+    sigmoidSteepness: 11,
+    sigmoidZero:      8.5,
+    swapAD:           false,
     
-    brow: {
-      stroke:        '#000',
-      width:         1,
-      shadow:        '#ca6',
-      shadowX:       0.75,
-      shadowY:       1.5
-    },
+    // appearance
+    smoothing:        true,
+    cursor:           'crosshair',
+    lineCap:          'round',
+    scaleMin:         10,
+    scaleMax:         370, // max-min=360 is highly composite
+    padding:          3,
     
-    eye: {
-      fill0:         '#fff',
-      stroke:        '#aaa',
-      width:         0.5
-    },
+    style:            STYLE_DEFAULTS
     
-    iris: {
-      fill0:         '#aed',
-      fill1:         '#adf',
-      stroke:        '#48c',
-      width:         0.5
-    },
-    
-    pupil: {
-      fill0:         '#000'
-    },
-    
-    mouth: {
-      fill0:         '#200',
-      fill1:         '#700',
-      stroke:        '#f55',
-      width:         0.5
-    },
-    
-    teeth: {
-      fill0:         '#fff',
-      shadow:        '#ddd',
-      stroke:        '#ccc',
-      width:         0.5,
-      grid:          [0.1, 0.25, 0.5, 0.75, 0.9]
-    }
   },
   
   
@@ -165,24 +114,44 @@ $.widget( 'ui.affectbutton', { // begin widget
     // TODO assert that this.element is a CANVAS and that options have sane values
     
     var k = this.options.offset * (4 + NUM_FEATURES),
-    element = this.element;
+    element = this.element,
+    thiz = this;
     
     // Set up instance state
-    $.extend( this, {
+    $.extend( thiz, {
       state: {
         pleasure:  ARCHETYPES[k + 1],
         arousal:   ARCHETYPES[k + 2],
         dominance: ARCHETYPES[k + 3]
       },
-      feats:   ARCHETYPES.slice( k + 4, k + 4 + NUM_FEATURES ),
+      features:   ARCHETYPES.slice( k + 4, k + 4 + NUM_FEATURES ),
       width:   0,
       height:  0,
-      active:  this.options.active,
+      active:  thiz.options.active,
       repaint: true,
-      down:    false
+      down:    false,
+      context: element.get( 0 ).getContext( '2d' )
     } );
     
-    element.css( 'cursor', this.options.cursor );
+    // Apply some of our options here
+    this.context.imageSmoothingEnabled = thiz.options.smoothing;
+    element.css( 'cursor', thiz.options.cursor );
+    
+    // If style was overridden and is now a single string, assume it is a
+    // JSON file and go fetch:
+    if ( typeof this.options.style === 'string' ) {
+      var visible = element.is( ':visible' );
+      if ( visible ) {
+        element.hide();
+      }
+      $.getJSON( thiz.options.style, function( data ) {
+        $.extend( thiz.options.style, data );
+        if ( visible ) {
+          element.show();
+        }
+      } );
+      thiz.options.style = STYLE_DEFAULTS;
+    }
     
     // Bind event listeners
     $.each( this._eventMap(), function( key, callback ) {
@@ -208,6 +177,7 @@ $.widget( 'ui.affectbutton', { // begin widget
   
   destroy: function() {
     this.element.off( '.ui-affectbutton' );
+    window.clearTimeout( this.timer );
   },
   
   
@@ -233,7 +203,7 @@ $.widget( 'ui.affectbutton', { // begin widget
     var thiz = this;
     switch ( arguments.length ) {
       case 0:
-        return $.extend({}, this.state);
+        return $.extend( {}, this.state );
       case 1:
         $.each( affect, function( k, v ) {
           thiz.affect( k, v );
@@ -271,46 +241,44 @@ $.widget( 'ui.affectbutton', { // begin widget
       'selectstart': false,
       'mouseenter': function() {
         thiz.down = false;
-        thiz.clicked = false;
         return false;
       },
       'mouseleave': function() {
         thiz.down = false;
-        thiz.clicked = false;
         return false;
       },
       'mousedown': function( event ) {
         thiz.down = true;
-        thiz.clicked = false;
         thiz._doMouse( event );
         return false;
       },
       'mousemove': function( event ) {
-        thiz.clicked = false;
         thiz._doMouse( event );
         return false;
       },
       'mouseup': function( event ) {
-        if ( thiz.down ) {
-          thiz.clicked = true;
-        }
         thiz.down = false;
         thiz._doMouse( event );
         return false;
+      },
+      'click': function( event ) {
+        if ( ! thiz.options.drag ) {
+          thiz.element.trigger( 'affectchanged', [thiz.affect()] );
+        }
       }
     };
   },
   
   _doMouse: function( event ) {
     var off;
-    if ( this.active && (this.down || !this.options.drag) ) {
+    if ( this.active && (this.down || ! this.options.drag) ) {
       off = this.element.offset();
       this.mouseX = event.pageX - off.left;
       this.mouseY = event.pageY - off.top;
       this._setXY( 2 * this.mouseX / (this.width - 1) - 1
           , 1 - 2 * this.mouseY / (this.height - 1) );
-      if ( this.clicked || this.down ) {
-        this.element.trigger( 'affectchanged', [this.affect()] );// TODO array???
+      if ( this.options.drag ) {
+        this.element.trigger( 'affectchanged', [this.affect()] );
       }
     }
   },
@@ -333,7 +301,7 @@ $.widget( 'ui.affectbutton', { // begin widget
     
     // Set all features to 0
     for ( i = 0; i < NUM_FEATURES; i++ ) {
-      this.feats[i] = 0;
+      this.features[i] = 0;
     }
     
     // We'll need the sum of all weights to normalize at the end
@@ -353,7 +321,7 @@ $.widget( 'ui.affectbutton', { // begin widget
         v = r - v;
         // add to the features
         for ( i = 0; i < NUM_FEATURES; i++ ) {
-          this.feats[i] += v * ARCHETYPES[k++];
+          this.features[i] += v * ARCHETYPES[k++];
         }
         // and increment total sum of weights
         w += v;
@@ -362,14 +330,20 @@ $.widget( 'ui.affectbutton', { // begin widget
     
     // Normalize the features using summed weight
     for ( i = 0; i < NUM_FEATURES; i++ ) {
-      this.feats[i] /= w;
+      this.features[i] /= w;
     }
   },
   
   
   // TODO paint function still waaaay too long, split up further
   _paint: function() {
-    var time, context, width, height, padding, size,
+    var context = this.context, 
+      time = Date.now(),
+      width = this.element.width(),
+      height = this.element.height(),
+      min = Math.min( width, height ),
+      padding = Math.max( 1, this._scale( min, this.options.padding ) ),
+      size = Math.max( min - 2*padding, 0 ),
       // TODO explain/rename variables:
       bew, beh, bmw, bmh,
       cx, cy, gx, gy, fx, fy,
@@ -378,25 +352,27 @@ $.widget( 'ui.affectbutton', { // begin widget
       mx, my, mu, mw, mh, mt, ml,
       tv;
     
-    time = Date.now();
-    
-    if ( ! (width = this.element.width())
-    || ! (height = this.element.height())
-    || ! this.element.is( ':visible' ) ) {
+    if ( ! (width && height) || ! this.element.is( ':visible' ) ) {
+      // widget is not visible - yet? retry a bit later 
       this._repaint( 250 );
       return;
     }
     
-    size = width < height ? width : height;
-    padding = Math.max( 1, this._scale( size, this.options.padding ) );
-    size = Math.max( size - 2*padding, 0 );
     gx = Math.round( (width - size) / 2 );
     gy = Math.round( (height - size) / 2 );
     
     // repaint background if necessary
     if ( width !== this.width || height !== this.height ) {
-      context = this.element.get( 0 ).getContext( '2d' );
       $.extend( this, { size: size, width: width, height: height } );
+      
+      // if canvas doesn't have width or height attributes, take these from
+      // CSS. If you specify both you effectively have different render and
+      // display resolution, with asorted scaling artefacts:
+      // http://stackoverflow.com/questions/4938346/canvas-width-and-height-in-html5
+      this.element.attr( {
+        width: this.element.attr( 'width' ) || width,
+        height: this.element.attr( 'height' ) || height
+      } );
       
       // background
       this._style( context, size, 'ground', 0, 0, 0, height );
@@ -412,7 +388,6 @@ $.widget( 'ui.affectbutton', { // begin widget
     
     // repaint features if necessary
     if ( this.repaint ) {
-      context = context || this.element.get( 0 ).getContext( '2d' );
       this.repaint = false;
       context.putImageData( this.backdrop, 0, 0, 0, 0, width, height );
       
@@ -434,26 +409,26 @@ $.widget( 'ui.affectbutton', { // begin widget
       
       // left eye
       ew = bew;
-      eh = (beh * (this.feats[0] + 1)) + 1;
+      eh = (beh * (this.features[0] + 1)) + 1;
       ex = fx + size*(3/20);
       ey = fy + size/3 - eh/2;
       
       // brow (relative to ex,ey)
-      bs = (beh * (this.feats[1] + 1)/2) + beh/2 + 1;
-      bo = (beh * -this.feats[2])/2;
-      bi = (beh * -this.feats[3])/2;
+      bs = (beh * (this.features[1] + 1)/2) + beh/2 + 1;
+      bo = (beh * -this.features[2])/2;
+      bi = (beh * -this.features[3])/2;
       
       // mouth
-      mw = bmw * (this.feats[4] + 1)/6 + bmw/2;
-      mh = bmh * (this.feats[5] + 1)/3;
-      mt = (bmh * this.feats[6])/2;
+      mw = bmw * (this.features[4] + 1)/6 + bmw/2;
+      mh = bmh * (this.features[5] + 1)/3;
+      mt = (bmh * this.features[6])/2;
       mx = fx + size/2 - mw/2;
       my = fy + size*(2/3) - mt;
       mu = mh - mt;
       ml = mh + mt;
       
       // teeth
-      tv = bmh * (this.feats[7] - 1)/3;
+      tv = bmh * (this.features[7] - 1)/3;
       
       // paint eye/brows
       for ( var k = 0; k < 2; k++ ) {
@@ -471,21 +446,21 @@ $.widget( 'ui.affectbutton', { // begin widget
       
       // draw shape, fill with teeth color, or shadow if enabled
       this._mouth( context, size, mx, my, mw, mu, ml );
-      context.fillStyle = this.options.teeth.shadow || this.options.teeth.fill0;
+      context.fillStyle = this.options.style.teeth.shadow || this.options.style.teeth.fill0;
       context.fill();
       // clip to mouth shape
       context.save();
       context.clip();
-      if ( this.options.teeth.shadow ) {
+      if ( this.options.style.teeth.shadow ) {
         // if enabled, cover shadow with teeth color 
         this._mouth( context, size, mx + mh/5, my + mh/3, mw, mu, ml );
-        context.fillStyle = this.options.teeth.fill0;
+        context.fillStyle = this.options.style.teeth.fill0;
         context.fill();
       }
       
       // draw the grid of teeth (non-uniform, suggests a bit of a depth?)
       this._style( context, size, 'teeth' );
-      $.each( this.options.teeth.grid, function( kk, vv ) {
+      $.each( this.options.style.teeth.grid, function( kk, vv ) {
         context.beginPath();
         context.moveTo( mx + vv*mw, Math.min(my, my - mu) );
         context.lineTo( mx + vv*mw, Math.max(my, my + ml) );
@@ -535,9 +510,9 @@ $.widget( 'ui.affectbutton', { // begin widget
     context.closePath();
     this._style( context, size, 'face', width/2 - size/4, height/2 - size/7, size/4, width/2, height/2, size );
     this._shadow( context, size, 'face', true );
+    context.stroke();
     this._shadow( context );
     context.fill();
-    context.stroke();
   },
   
   _eye: function( context, size, ex, ey, ew, eh ) {
@@ -578,7 +553,7 @@ $.widget( 'ui.affectbutton', { // begin widget
     context.moveTo( ex, ey + eh/2 - bs + (k ? bi : bo) - (bi-bo)/8 );
     context.lineTo( ex + ew, ey + eh/2 - bs + (k ? bo : bi) );
     context.closePath();
-    this._shadow( context, size, 'brow' );
+    this._shadow( context, size, 'brow', true );
     this._style( context, size, 'brow' );
     context.stroke();
     this._shadow( context );
@@ -594,26 +569,26 @@ $.widget( 'ui.affectbutton', { // begin widget
     context.closePath();
   },
   
-  _shadow: function( context, size, feature, blur ) {
+  _shadow: function( context, size, item, blur ) {
     if ( arguments.length === 1 ) {
       context.shadowColor = '';
       context.shadowOffsetX = 0;
       context.shadowOffsetY = 0;
       context.shadowBlur = 0;
     } else {
-      context.shadowColor = this.options[feature].shadow;
-      context.shadowOffsetX = this._scale( size, this.options[feature].shadowX );
-      context.shadowOffsetY = this._scale( size, this.options[feature].shadowY );
+      context.shadowColor = this.options.style[item].shadow;
+      context.shadowOffsetX = this._scale( size, this.options.style[item].shadowX );
+      context.shadowOffsetY = this._scale( size, this.options.style[item].shadowY );
       context.shadowBlur = blur ? context.shadowOffsetX + context.shadowOffsetY : 0;
     }
   },
   
-  _style: function( context, size, feature ) {
-    var color0 = this.options[feature].fill0,
-      color1 = this.options[feature].fill1 || color0,
+  _style: function( context, size, item ) {
+    var color0 = this.options.style[item].fill0,
+      color1 = this.options.style[item].fill1 || color0,
       gradient;
-    context.lineWidth = this._scale( size, this.options[feature].width );
-    context.strokeStyle = this.options[feature].stroke;
+    context.lineWidth = this._scale( size, this.options.style[item].width );
+    context.strokeStyle = this.options.style[item].stroke;
     if ( arguments.length > 3 && color0 !== color1 ) {
       gradient = context['create' + (arguments.length > 7 ? 'Radial' : 'Linear') + 'Gradient']
           .apply( context, Array.prototype.slice.call( arguments, 3 ) );

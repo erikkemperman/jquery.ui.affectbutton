@@ -1,0 +1,58 @@
+{
+  "ground": {
+    "fill0":         "#534",
+    "fill1":         "#756",
+    "stroke":        "#867",
+    "width":         2
+  },
+  
+  "face": {
+    "fill0":         "#fdb",
+    "fill1":         "#eb0",
+    "stroke":        "#fc3",
+    "width":         1,
+    "shadow":        "#312",
+    "shadowX":       2,
+    "shadowY":       3
+  },
+  
+  "brow": {
+    "stroke":        "#000",
+    "width":         1,
+    "shadow":        "#ca6",
+    "shadowX":       0.75,
+    "shadowY":       1.5
+  },
+  
+  "eye": {
+    "fill0":         "#fff",
+    "stroke":        "#aaa",
+    "width":         0.5
+  },
+  
+  "iris": {
+    "fill0":         "#aed",
+    "fill1":         "#adf",
+    "stroke":        "#48c",
+    "width":         0.5
+  },
+  
+  "pupil": {
+    "fill0":         "#000"
+  },
+  
+  "mouth": {
+    "fill0":         "#200",
+    "fill1":         "#700",
+    "stroke":        "#f55",
+    "width":         0.5
+  },
+  
+  "teeth": {
+    "fill0":         "#fff",
+    "shadow":        "#ddd",
+    "stroke":        "#ccc",
+    "width":         0.5,
+    "grid":          [0.1, 0.25, 0.5, 0.75, 0.9]
+  }
+}
