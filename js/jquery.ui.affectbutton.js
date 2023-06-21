@@ -74,7 +74,7 @@ var NUM_FEATURES = 8,
       shadow:         '',
       stroke:         '#ffc800',
       width:          1,
-      grid:           [.1, .25, .5, .75, .9]
+      grid:           [0.1, 0.25, 0.5, 0.75, 0.9]
     }
   };
 
@@ -257,7 +257,7 @@ $.widget( 'ui.affectbutton', { // begin widget
         thiz._doMouse( event );
         return false;
       },
-      'touchstart': function( event ) {
+      'touchstart': function() {
         thiz.touch = true;
       },
       'touchmove': function() {
