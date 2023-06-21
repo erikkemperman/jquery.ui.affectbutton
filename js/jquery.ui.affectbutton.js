@@ -158,6 +158,7 @@ $.widget( 'ui.affectbutton', { // begin widget
       // When using jQueryMobile, bind to its 'virtual' events
       if ( typeof $.mobile !== 'undefined'
           && ( key === 'mousedown' || key === 'mousemove' || key === 'mouseup' ) ) {
+        element.off( key );
         key = 'v' + key;
       }
       element.on( key + '.ui-affectbutton', callback );
