@@ -260,11 +260,6 @@ $.widget( 'ui.affectbutton', { // begin widget
         thiz.down = false;
         thiz._doMouse( event );
         return false;
-      },
-      'click': function( event ) {
-        if ( ! thiz.options.drag ) {
-          thiz.element.trigger( 'affectchanged', [thiz.affect()] );
-        }
       }
     };
   },
@@ -277,7 +272,7 @@ $.widget( 'ui.affectbutton', { // begin widget
       this.mouseY = event.pageY - off.top;
       this._setXY( 2 * this.mouseX / (this.width - 1) - 1
           , 1 - 2 * this.mouseY / (this.height - 1) );
-      if ( this.options.drag ) {
+      if ( this.down ) {
         this.element.trigger( 'affectchanged', [this.affect()] );
       }
     }
